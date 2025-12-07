@@ -125,3 +125,92 @@
 
   Scratch.extensions.register(new TextExtension());
 })(Scratch);
+(function (Scratch) {
+  'use strict';
+
+  class TextExtension {
+    constructor() {
+      this.currentFont = '16px Arial';
+      this.bold = false;
+      this.italic = false;
+    }
+
+    getInfo() {
+      return {
+        id: 'textExtension',
+        name: 'MS Paint Text',
+        blocks: [
+          {
+            opcode: 'drawText',
+            blockType: Scratch.BlockType.COMMAND,
+            text: 'draw text [TEXT] at x [X] y [Y] with color [COLOR]',
+            arguments: {
+              TEXT: { type: Scratch.ArgumentType.STRING, defaultValue: 'Hello' },
+              X: { type: Scratch.ArgumentType.NUMBER, defaultValue: 100 },
+              Y: { type: Scratch.ArgumentType.NUMBER, defaultValue: 100 },
+              COLOR: { type: Scratch.ArgumentType.STRING, defaultValue: '#000000' }
+            }
+          },
+          {
+            opcode: 'setFont',
+            blockType: Scratch.BlockType.COMMAND,
+            text: 'set font to [FONT]',
+            arguments: {
+              FONT: { type: Scratch.ArgumentType.STRING, defaultValue: 'Arial' }
+            }
+          },
+          {
+            opcode: 'setBold',
+            blockType: Scratch.BlockType.COMMAND,
+            text: 'set bold [STATE]',
+            arguments: {
+              STATE: { type: Scratch.ArgumentType.STRING, menu: 'booleanMenu', defaultValue: 'true' }
+            }
+          },
+          {
+            opcode: 'setItalic',
+            blockType: Scratch.BlockType.COMMAND,
+            text: 'set italic [STATE]',
+            arguments: {
+              STATE: { type: Scratch.ArgumentType.STRING, menu: 'booleanMenu', defaultValue: 'true' }
+            }
+          }
+        ],
+        menus: {
+          booleanMenu: [
+            { text: 'true', value: 'true' },
+            { text: 'false', value: 'false' }
+          ]
+        }
+      };
+    }
+
+    drawText(args, util) {
+      const ctx = util.target.renderer.ctx;
+      ctx.fillStyle = args.COLOR;
+
+      // Build font string with bold/italic
+      let style = '';
+      if (this.bold) style += 'bold ';
+      if (this.italic) style += 'italic ';
+      ctx.font = `${style}16px ${this.currentFont}`;
+
+      ctx.fillText(args.TEXT, args.X, args.Y);
+    }
+
+    setFont(args) {
+      this.currentFont = args.FONT;
+    }
+
+    setBold(args) {
+      this.bold = args.STATE === 'true';
+    }
+
+    setItalic(args) {
+      this.italic = args.STATE === 'true';
+    }
+  }
+
+  Scratch.extensions.register(new TextExtension());
+})(Scratch);
+        
